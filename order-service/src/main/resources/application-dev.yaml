@@ -1,0 +1,22 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/ecommerce_order_service
+      database: ecommerce_order_service
+      username: test
+      password: password
+      repositories:
+        type: reactive
+  jackson:
+    time-zone: Asia/Dhaka
+server:
+  port: 9050
+  forward-headers-strategy: framework
+  netty:
+    connection-timeout: 2m
+    idle-timeout: 15m
+  error:
+    include-message: always
+    include-exception: false
+    include-binding-errors: always
+    include-stacktrace: never

@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: order-service
+  profiles:
+    default: dev
+    active: dev
+  webflux:
+    base-path: /api
+  data:
+    rest:
+      default-page-size: 14
+      max-page-size: 34
+info:
+  application:
+    metadata:
+      name:
+        ${spring.application.name}
+      description: Order Service for E-Commerce microservices landscape
+      version: 1.0.0-SNAPSHOT
+    developer:
+      name: Syed Riadh Hossen
+      email: hossensyedriadh@gmail.com
+      url: https://hossensyedriadh.github.io

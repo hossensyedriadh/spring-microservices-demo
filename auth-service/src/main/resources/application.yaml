@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: auth-service
+  profiles:
+    default: dev
+    active: dev
+  webflux:
+    base-path: /api
+info:
+  application:
+    metadata:
+      name: ${spring.application.name}
+      description: Authentication Service for E-Commerce microservices landscape
+      version: 1.0.0-SNAPSHOT
+    developer:
+      name: Syed Riadh Hossen
+      email: hossensyedriadh@gmail.com
+      url: https://hossensyedriadh.github.io
+bearer-authentication:
+  keystore:
+    location: ${keystore_location}
+    passphrase: ${keystore_passphrase}
+    private-key-passphrase: ${keystore_private_passphrase}
+    key-alias: authentication
+  tokens:
+    access-token:
+      type: Bearer
+      validity-mins: 30
+    refresh-token:
+      validity-mins: 180
+management:
+  endpoint:
+    health:
+      show-details: when_authorized
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      cors:
+        max-age: 3600s
+        allowed-origins: "*"
+        allowed-headers: Accept, Content-Type
+        allowed-methods: POST, OPTIONS, HEAD
+        allow-credentials: false
