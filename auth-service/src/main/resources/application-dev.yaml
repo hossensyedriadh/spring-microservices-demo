@@ -21,7 +21,6 @@ spring:
       repositories:
         type: reactive
 server:
-  port: 8090
   forward-headers-strategy: framework
   netty:
     connection-timeout: 2m

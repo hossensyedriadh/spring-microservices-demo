@@ -16,6 +16,10 @@ info:
       name: Syed Riadh Hossen
       email: hossensyedriadh@gmail.com
       url: https://hossensyedriadh.github.io
+eureka:
+  client:
+    service-url:
+      default-zone: http://localhost:8761/eureka
 bearer-authentication:
   keystore:
     location: ${keystore_location}
