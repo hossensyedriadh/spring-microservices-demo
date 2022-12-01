@@ -10,6 +10,10 @@ spring:
     rest:
       default-page-size: 14
       max-page-size: 34
+eureka:
+  client:
+    service-url:
+      default-zone: http://localhost:8761/eureka
 info:
   application:
     metadata:

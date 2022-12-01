@@ -10,7 +10,6 @@ spring:
   jackson:
     time-zone: Asia/Dhaka
 server:
-  port: 9050
   forward-headers-strategy: framework
   netty:
     connection-timeout: 2m

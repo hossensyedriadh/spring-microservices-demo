@@ -16,7 +16,6 @@ spring:
       repositories:
         enabled: true
 server:
-  port: 9000
   forward-headers-strategy: framework
   netty:
     connection-timeout: 2m
