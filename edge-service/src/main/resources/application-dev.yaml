@@ -1,0 +1,13 @@
+server:
+  shutdown: graceful
+  error:
+    include-stacktrace: never
+    include-binding-errors: always
+    include-message: always
+    include-exception: false
+    whitelabel:
+      enabled: false
+  netty:
+    connection-timeout: 2m
+    idle-timeout: 15m
+  forward-headers-strategy: framework

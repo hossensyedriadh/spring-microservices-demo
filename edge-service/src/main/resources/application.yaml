@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: edge-service
+  webflux:
+    base-path: /api
+  profiles:
+    default: dev
+    active: dev
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+info:
+  application:
+    metadata:
+      name: ${spring.application.name}
+      description: Edge Service for E-Commerce microservices landscape
+      version: 1.0.0-SNAPSHOT
+    developer:
+      name: Syed Riadh Hossen
+      email: hossensyedriadh@gmail.com
+      uri: https://hossensyedriadh.github.io
+eureka:
+  client:
+    service-url:
+      default-zone: http://localhost:8761/eureka
+bearer-authentication:
+  public-key:
+    path: classpath:keys/public.pem
+  tokens:
+    access-token:
+      type: Bearer
+management:
+  endpoint:
+    health:
+      show-details: when_authorized
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      cors:
+        max-age: 3600s
+        allowed-origins: "*"
+        allowed-headers: Accept, Content-Type, Authorization
+        allowed-methods: GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD
+        allow-credentials: false
