@@ -29,9 +29,9 @@ bearer-authentication:
   tokens:
     access-token:
       type: Bearer
-      validity-mins: 30
+      validity-mins: 60
     refresh-token:
-      validity-mins: 180
+      validity-mins: 360
 management:
   endpoint:
     health:

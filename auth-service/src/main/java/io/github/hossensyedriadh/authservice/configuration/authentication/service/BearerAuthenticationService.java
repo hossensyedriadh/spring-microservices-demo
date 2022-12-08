@@ -9,7 +9,6 @@ import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -73,29 +72,20 @@ public class BearerAuthenticationService {
                 .withExpiresAt(calendar.getTime()).sign(Algorithm.RSA256(this.rsaPublicKey, this.rsaPrivateKey)));
     }
 
-    public Mono<Boolean> isAccessTokenValid(String token, UserDetails userDetails) {
-        Mono<Jwt> decodedJwt = NimbusReactiveJwtDecoder.withPublicKey(this.rsaPublicKey).build().decode(token)
-                .onErrorResume(e -> Mono.error(new Exception(e.getMessage())));
-
-        return decodedJwt.flatMap(jwt -> Mono.just(jwt.getClaimAsString("username").equals(userDetails.getUsername())
-                && jwt.getSubject().equals(this.accessTokenSubject)));
-    }
-
     public Mono<String> getRefreshToken(String username, Map<String, String> claims) {
         Mono<RefreshToken> refreshTokenMono = this.refreshTokenRepository.findByForUser(username);
 
         return refreshTokenMono.hasElement().flatMap(v -> {
             if (v) {
                 return refreshTokenMono.flatMap(refreshToken -> NimbusReactiveJwtDecoder.withPublicKey(this.rsaPublicKey).build().decode(refreshToken.getToken())
-                                .flatMap(token -> {
-                                    if (Objects.requireNonNull(token.getExpiresAt()).isAfter(Instant.now())
-                                            && token.getSubject().equals(this.refreshTokenSubject)) {
-                                        return Mono.just(refreshToken.getToken());
-                                    } else {
-                                        return this.createRefreshToken(username, claims);
-                                    }
-                                }).onErrorResume(e -> this.createRefreshToken(username, claims)))
-                        .onErrorResume(e -> this.createRefreshToken(username, claims));
+                        .flatMap(token -> {
+                            if (Objects.requireNonNull(token.getExpiresAt()).isAfter(Instant.now())
+                                    && token.getSubject().equals(this.refreshTokenSubject)) {
+                                return Mono.just(refreshToken.getToken());
+                            } else {
+                                return this.createRefreshToken(username, claims);
+                            }
+                        }).onErrorResume(e -> this.createRefreshToken(username, claims)));
             } else {
                 return this.createRefreshToken(username, claims);
             }
@@ -120,7 +110,7 @@ public class BearerAuthenticationService {
 
         return refreshTokenFlux.hasElements().flatMap(t -> {
             if (t) {
-                return this.refreshTokenRepository.deleteAll(refreshTokenFlux).flatMap(v -> this.persistRefreshToken(username, id, token));
+                return this.refreshTokenRepository.deleteAll(refreshTokenFlux).then(this.persistRefreshToken(username, id, token));
             } else {
                 return this.persistRefreshToken(username, id, token);
             }

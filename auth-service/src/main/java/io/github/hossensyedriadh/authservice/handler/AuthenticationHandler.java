@@ -1,12 +1,10 @@
 package io.github.hossensyedriadh.authservice.handler;
 
-import io.github.hossensyedriadh.authservice.exception.GenericException;
 import io.github.hossensyedriadh.authservice.model.AccessTokenRequest;
 import io.github.hossensyedriadh.authservice.model.BearerTokenRequest;
 import io.github.hossensyedriadh.authservice.model.BearerTokenResponse;
 import io.github.hossensyedriadh.authservice.service.authentication.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -26,8 +24,7 @@ public class AuthenticationHandler {
         Mono<BearerTokenRequest> bearerTokenRequestMono = serverRequest.bodyToMono(BearerTokenRequest.class);
 
         return bearerTokenRequestMono.flatMap(r -> ServerResponse.ok()
-                .contentType(MediaType.APPLICATION_JSON).body(this.authenticationService.accessToken(r)
-                                .onErrorResume(e -> Mono.error(new GenericException(e.getMessage(), HttpStatus.UNAUTHORIZED, serverRequest))),
+                .contentType(MediaType.APPLICATION_JSON).body(this.authenticationService.accessToken(r),
                         BearerTokenResponse.class));
     }
 
@@ -35,8 +32,7 @@ public class AuthenticationHandler {
         Mono<AccessTokenRequest> accessTokenRequestMono = serverRequest.bodyToMono(AccessTokenRequest.class);
 
         return accessTokenRequestMono.flatMap(r -> ServerResponse.ok()
-                .contentType(MediaType.APPLICATION_JSON).body(this.authenticationService.renewAccessToken(r)
-                                .onErrorResume(e -> Mono.error(new GenericException(e.getMessage(), HttpStatus.UNAUTHORIZED, serverRequest))),
+                .contentType(MediaType.APPLICATION_JSON).body(this.authenticationService.renewAccessToken(r),
                         BearerTokenResponse.class));
     }
 }
