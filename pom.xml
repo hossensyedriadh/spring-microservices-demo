@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>io.github.hossensyedriadh</groupId>
+    <artifactId>spring-microservices-demo</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>spring-microservices-demo</name>
+    <description>Reactive Microservices with Spring Boot</description>
+
+    <developers>
+        <developer>
+            <name>Syed Riadh Hossen</name>
+            <email>hossensyedriadh@gmail.com</email>
+            <url>https://hossensyedriadh.github.io</url>
+        </developer>
+    </developers>
+
+    <modules>
+        <module>edge-service</module>
+        <module>auth-service</module>
+        <module>discovery-service</module>
+        <module>user-service</module>
+        <module>product-service</module>
+        <module>order-service</module>
+    </modules>
+</project>
