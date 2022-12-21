@@ -1,8 +1,6 @@
 spring:
   application:
     name: edge-service
-  webflux:
-    base-path: /api
   profiles:
     default: dev
     active: dev
@@ -11,6 +9,51 @@ spring:
       discovery:
         locator:
           enabled: true
+      routes:
+        - id: product-service
+          uri: lb://PRODUCT-SERVICE
+          predicates:
+            - Path=/api/v1/products/**
+        - id: order-service
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/api/v1/orders/**
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/v1/users/**
+        - id: auth-service
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/api/v1/authentication/**
+eureka:
+  client:
+    service-url:
+      default-zone: http://localhost:8761/eureka
+    registry-fetch-interval-seconds: 5
+bearer-authentication:
+  public-key:
+    path: classpath:keys/public.pem
+  tokens:
+    access-token:
+      type: Bearer
+management:
+  endpoint:
+    health:
+      show-details: always
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      cors:
+        max-age: 3600s
+        allowed-origins: "*"
+        allowed-headers: "*"
+        allowed-methods: "*"
+        allow-credentials: false
 info:
   application:
     metadata:
@@ -21,27 +64,11 @@ info:
       name: Syed Riadh Hossen
       email: hossensyedriadh@gmail.com
       uri: https://hossensyedriadh.github.io
-eureka:
-  client:
-    service-url:
-      default-zone: http://localhost:8761/eureka
-bearer-authentication:
-  public-key:
-    path: classpath:keys/public.pem
-  tokens:
-    access-token:
-      type: Bearer
-management:
-  endpoint:
-    health:
-      show-details: when_authorized
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-      cors:
-        max-age: 3600s
-        allowed-origins: "*"
-        allowed-headers: Accept, Content-Type, Authorization
-        allowed-methods: GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD
-        allow-credentials: false
+server:
+  error:
+    whitelabel:
+      enabled: false
+    include-message: always
+    include-stacktrace: never
+    include-exception: true
+    include-binding-errors: always

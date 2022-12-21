@@ -11,10 +11,8 @@ public class GlobalCorsConfiguration implements WebFluxConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**").allowedOrigins("*")
-                .allowedHeaders(HttpHeaders.ACCEPT, HttpHeaders.CONTENT_TYPE, HttpHeaders.AUTHORIZATION)
-                .allowedMethods(HttpMethod.GET.toString(), HttpMethod.POST.toString(), HttpMethod.PUT.toString(),
-                        HttpMethod.PATCH.toString(), HttpMethod.DELETE.toString(), HttpMethod.OPTIONS.toString(),
-                        HttpMethod.HEAD.toString())
+                .allowedHeaders("*")
+                .allowedMethods("*")
                 .allowCredentials(false).maxAge(3600);
     }
 }
