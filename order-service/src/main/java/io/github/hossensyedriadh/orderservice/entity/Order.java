@@ -1,6 +1,5 @@
 package io.github.hossensyedriadh.orderservice.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.hossensyedriadh.orderservice.enumerator.OrderStatus;
 import lombok.*;
@@ -11,7 +10,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 @NoArgsConstructor
@@ -36,9 +34,8 @@ public final class Order implements Serializable {
     @NotNull
     private OrderStatus status;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss Z")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private ZonedDateTime createdOn;
+    private long createdOn;
 
     @NotNull
     private String orderBy;

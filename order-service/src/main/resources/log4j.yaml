@@ -1,8 +1,0 @@
-log4j:
-  rootLogger: INFO, ConsoleAppender
-  appender:
-    ConsoleAppender:
-      name: org.apache.log4j.ConsoleAppender
-      layout:
-        name: org.apache.log4j.PatternLayout
-        ConversionPattern: %-7p %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %x - %m%n

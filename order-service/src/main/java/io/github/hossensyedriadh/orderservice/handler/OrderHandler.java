@@ -1,7 +1,6 @@
 package io.github.hossensyedriadh.orderservice.handler;
 
 import io.github.hossensyedriadh.orderservice.entity.Order;
-import io.github.hossensyedriadh.orderservice.exception.ResourceException;
 import io.github.hossensyedriadh.orderservice.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -70,15 +69,12 @@ public class OrderHandler {
         Mono<Order> orderMono = serverRequest.bodyToMono(Order.class);
 
         return orderMono.flatMap(order -> ServerResponse.status(HttpStatus.CREATED)
-                .contentType(MediaType.APPLICATION_JSON).body(this.orderService.create(order).onErrorResume(e -> Mono.error(new ResourceException(e.getMessage(),
-                        HttpStatus.BAD_REQUEST, serverRequest))), Order.class));
+                .contentType(MediaType.APPLICATION_JSON).body(this.orderService.create(order), Order.class));
     }
 
     public Mono<ServerResponse> modify(ServerRequest serverRequest) {
         Mono<Order> orderMono = serverRequest.bodyToMono(Order.class);
 
-        return orderMono.flatMap(order -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(this.orderService.update(order)
-                .onErrorResume(e -> Mono.error(new ResourceException(e.getMessage(),
-                        HttpStatus.BAD_REQUEST, serverRequest))), Order.class));
+        return orderMono.flatMap(order -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(this.orderService.update(order), Order.class));
     }
 }

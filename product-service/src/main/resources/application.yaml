@@ -10,10 +10,31 @@ spring:
     rest:
       default-page-size: 14
       max-page-size: 34
+  kafka:
+    consumer:
+      group-id: orders
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            use:
+              type:
+                headers: false
+            value:
+              default:
+                type: io.github.hossensyedriadh.productservice.model.Order
+    properties:
+      spring:
+        json:
+          trusted:
+            packages: "*"
 eureka:
   client:
     service-url:
       default-zone: http://localhost:8761/eureka
+    registry-fetch-interval-seconds: 5
 info:
   application:
     metadata:
@@ -25,3 +46,8 @@ info:
       name: Syed Riadh Hossen
       email: hossensyedriadh@gmail.com
       url: https://hossensyedriadh.github.io
+kafka:
+  consumer:
+    topic:
+      create-order: CREATE-ORDER-TOPIC
+      update-order: UPDATE-ORDER-TOPIC

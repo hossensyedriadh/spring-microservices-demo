@@ -5,10 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRepositories;
 import org.springframework.web.reactive.config.EnableWebFlux;
-import reactivefeign.spring.config.EnableReactiveFeignClients;
 
 @EnableEurekaClient
-@EnableReactiveFeignClients(basePackages = {"io.github.hossensyedriadh.orderservice.proxy"})
 @EnableWebFlux
 @EnableReactiveMongoRepositories(basePackages = {"io.github.hossensyedriadh.orderservice.repository"})
 @SpringBootApplication

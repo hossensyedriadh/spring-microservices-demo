@@ -10,10 +10,27 @@ spring:
     rest:
       default-page-size: 14
       max-page-size: 34
+  cloud:
+    discovery:
+      enabled: true
 eureka:
   client:
     service-url:
       default-zone: http://localhost:8761/eureka
+    registry-fetch-interval-seconds: 5
+    fetch-registry: true
+    register-with-eureka: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  info:
+    env:
+      enabled: true
+  endpoint:
+    health:
+      show-details: always
 info:
   application:
     metadata:
@@ -25,3 +42,8 @@ info:
       name: Syed Riadh Hossen
       email: hossensyedriadh@gmail.com
       url: https://hossensyedriadh.github.io
+kafka:
+  producer:
+    topic:
+      create-order: CREATE-ORDER-TOPIC
+      update-order: UPDATE-ORDER-TOPIC
