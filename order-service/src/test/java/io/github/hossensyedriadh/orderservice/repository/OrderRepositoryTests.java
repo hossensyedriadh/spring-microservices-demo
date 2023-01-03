@@ -19,7 +19,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -36,9 +36,9 @@ public class OrderRepositoryTests {
 
     private final List<Order> orders = Arrays.asList(new Order(UUID.randomUUID().toString(),
             List.of(new Item(UUID.randomUUID().toString(), 1, 5000, "product_1")), 5000,
-            OrderStatus.ACTIVE, ZonedDateTime.now(), "test"), new Order(UUID.randomUUID().toString(),
+            OrderStatus.ACTIVE, Instant.now().getEpochSecond(), "test"), new Order(UUID.randomUUID().toString(),
             List.of(new Item(UUID.randomUUID().toString(), 3, 3000, "product_2")), 9000,
-            OrderStatus.ACTIVE, ZonedDateTime.now(), "test"));
+            OrderStatus.ACTIVE, Instant.now().getEpochSecond(), "test"));
 
     @Before
     public void seed() {
@@ -67,7 +67,7 @@ public class OrderRepositoryTests {
         String id = UUID.randomUUID().toString();
         Order order = new Order(id,
                 List.of(new Item(UUID.randomUUID().toString(), 2, 2000, "product_2")), 4000,
-                OrderStatus.ACTIVE, ZonedDateTime.now(), "test");
+                OrderStatus.ACTIVE, Instant.now().getEpochSecond(), "test");
 
         Mono<Order> orderMono = this.orderRepository.save(order).doOnNext(System.out::println);
 

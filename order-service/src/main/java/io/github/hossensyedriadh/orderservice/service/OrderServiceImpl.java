@@ -91,8 +91,8 @@ public final class OrderServiceImpl implements OrderService {
             Mono<Order> orderMono = this.orderRepository.save(order);
 
             return orderMono.flatMap(o -> this.reactiveKafkaProducerTemplate.send(this.createOrderTopic, o)
-                    .doOnSuccess(result -> log.info("Sent " + order + " Offset: " + result.recordMetadata().offset()))
-                    .then(orderMono));
+                    .doOnSuccess(result -> log.info("Sent " + o + " | Topic: " + result.recordMetadata().topic() + " | Offset: " + result.recordMetadata().offset()))
+                    .then(Mono.just(o)));
         });
     }
 
@@ -102,12 +102,12 @@ public final class OrderServiceImpl implements OrderService {
         return orderMono.map(o -> o).flatMap(s -> {
             s.setStatus(order.getStatus());
 
-            Mono<Order> updatedOrderMono = this.orderRepository.save(order);
+            Mono<Order> updatedOrderMono = this.orderRepository.save(s);
 
             if (order.getStatus() == OrderStatus.CANCELLED) {
                 return updatedOrderMono.flatMap(o -> this.reactiveKafkaProducerTemplate.send(this.updateOrderTopic, o)
-                        .doOnSuccess(result -> log.info("Sent " + order + " Offset: " + result.recordMetadata().offset()))
-                        .then(updatedOrderMono));
+                        .doOnSuccess(result -> log.info("Sent " + o + " | Topic: " + result.recordMetadata().topic() + " | Offset: " + result.recordMetadata().offset()))
+                        .then(Mono.just(o)));
             }
 
             return updatedOrderMono;
