@@ -44,7 +44,9 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityWebFilterChain security(ServerHttpSecurity security) {
-        security.cors().and().csrf().disable().authorizeExchange().anyExchange().authenticated().and().exceptionHandling()
+        security.cors().and().csrf().disable().authorizeExchange(s -> s.pathMatchers("/auth-service/**").permitAll()
+                        .anyExchange().authenticated())
+                .exceptionHandling()
                 .accessDeniedHandler(this.globalAccessDeniedHandler).authenticationEntryPoint(this.globalAuthenticationEntrypoint);
 
         security.headers().frameOptions().mode(XFrameOptionsServerHttpHeadersWriter.Mode.DENY);

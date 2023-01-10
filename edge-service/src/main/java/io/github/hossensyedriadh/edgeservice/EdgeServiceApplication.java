@@ -3,11 +3,9 @@ package io.github.hossensyedriadh.edgeservice;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration;
-import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
-import org.springframework.web.reactive.config.EnableWebFlux;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
-@EnableEurekaClient
-@EnableWebFlux
+@EnableDiscoveryClient
 @SpringBootApplication(exclude = {ReactiveUserDetailsServiceAutoConfiguration.class})
 public class EdgeServiceApplication {
 
