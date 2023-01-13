@@ -88,9 +88,7 @@ public final class OrderServiceImpl implements OrderService {
             order.setItems(itemList);
             order.setCreatedOn(Instant.now(Clock.systemDefaultZone()).getEpochSecond());
 
-            Mono<Order> orderMono = this.orderRepository.save(order);
-
-            return orderMono.flatMap(o -> this.reactiveKafkaProducerTemplate.send(this.createOrderTopic, o)
+            return this.orderRepository.save(order).flatMap(o -> this.reactiveKafkaProducerTemplate.send(this.createOrderTopic, o)
                     .doOnSuccess(result -> log.info("Sent " + o + " | Topic: " + result.recordMetadata().topic() + " | Offset: " + result.recordMetadata().offset()))
                     .then(Mono.just(o)));
         });
