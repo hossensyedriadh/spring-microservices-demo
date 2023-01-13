@@ -33,7 +33,7 @@ eureka:
     registry-fetch-interval-seconds: 5
 bearer-authentication:
   public-key:
-    path: classpath:keys/public.pem
+    path: classpath:keys/public_key.cert
   tokens:
     access-token:
       type: Bearer

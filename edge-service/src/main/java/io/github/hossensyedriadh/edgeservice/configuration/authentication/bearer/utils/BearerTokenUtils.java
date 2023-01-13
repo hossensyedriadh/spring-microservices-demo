@@ -32,9 +32,9 @@ public class BearerTokenUtils {
             byte[] bytes = inputStream.readAllBytes();
             String key = new String(bytes);
 
-            key = key.replace("-----BEGIN PUBLIC KEY-----", "")
+            key = key.replace("-----BEGIN CERTIFICATE-----", "")
                     .replaceAll("\\R", "")
-                    .replace("-----END PUBLIC KEY-----", "").trim();
+                    .replace("-----END CERTIFICATE-----", "").trim();
 
             byte[] keyBytes = Base64.getDecoder().decode(key);
 
