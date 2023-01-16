@@ -61,6 +61,10 @@ public final class OrderServiceImpl implements OrderService {
 
     @Override
     public Mono<Order> create(Order order) {
+        if (order.getItems().isEmpty()) {
+            throw new ResourceException("No Items added in the order", HttpStatus.BAD_REQUEST);
+        }
+
         Flux<Item> items = Flux.fromIterable(order.getItems());
         List<Item> itemList = new ArrayList<>();
 
@@ -82,9 +86,6 @@ public final class OrderServiceImpl implements OrderService {
                 })).hasElements();
 
         return valid.flatMap(v -> {
-            if (itemList.isEmpty()) {
-                return Mono.error(new ResourceException("No items added in the order", HttpStatus.BAD_REQUEST));
-            }
             order.setItems(itemList);
             order.setCreatedOn(Instant.now(Clock.systemDefaultZone()).getEpochSecond());
 
@@ -98,6 +99,10 @@ public final class OrderServiceImpl implements OrderService {
     public Mono<Order> update(Order order) {
         Mono<Order> orderMono = this.orderRepository.findById(order.getId());
         return orderMono.map(o -> o).flatMap(s -> {
+            if (s.getStatus() == OrderStatus.CANCELLED || s.getStatus() == OrderStatus.DELIVERED) {
+                return Mono.error(new ResourceException("Cancelled/Delivered orders can not be updated", HttpStatus.BAD_REQUEST));
+            }
+
             s.setStatus(order.getStatus());
 
             Mono<Order> updatedOrderMono = this.orderRepository.save(s);
