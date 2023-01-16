@@ -43,7 +43,7 @@ public class BearerAuthenticationService {
 
     private int accessTokenValidity;
 
-    private final String accessTokenSubject = "Access Token";
+    private static final String accessTokenSubject = "Access Token";
 
     private int refreshTokenValidity;
 
@@ -64,7 +64,7 @@ public class BearerAuthenticationService {
         calendar.setTimeInMillis(Instant.now().toEpochMilli());
         calendar.add(Calendar.MINUTE, this.accessTokenValidity);
 
-        JWTCreator.Builder accessTokenBuilder = JWT.create().withSubject(this.accessTokenSubject)
+        JWTCreator.Builder accessTokenBuilder = JWT.create().withSubject(accessTokenSubject)
                 .withIssuer(this.tokenIssuer);
         claims.forEach(accessTokenBuilder::withClaim);
 
