@@ -13,19 +13,19 @@ spring:
         - id: product-service
           uri: lb://PRODUCT-SERVICE
           predicates:
-            - Path=/api/v1/products/**
+            - Path=/product-service/api/**
         - id: order-service
           uri: lb://ORDER-SERVICE
           predicates:
-            - Path=/api/v1/orders/**
+            - Path=/order-service/api/**
         - id: user-service
           uri: lb://USER-SERVICE
           predicates:
-            - Path=/api/v1/users/**
+            - Path=/user-service/api/**
         - id: auth-service
           uri: lb://AUTH-SERVICE
           predicates:
-            - Path=/api/v1/authentication/**
+            - Path=/auth-service/api/**
 eureka:
   client:
     service-url:
@@ -33,7 +33,7 @@ eureka:
     registry-fetch-interval-seconds: 5
 bearer-authentication:
   public-key:
-    path: classpath:keys/public_key.cert
+    path: ${bearer_auth_certificate}
   tokens:
     access-token:
       type: Bearer
