@@ -29,7 +29,7 @@ public final class Order implements Serializable {
 
     @NotNull
     @PositiveOrZero
-    private double totalPrice;
+    private Double totalPrice;
 
     @NotNull
     private OrderStatus status;

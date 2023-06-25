@@ -23,11 +23,11 @@ public final class Item implements Serializable {
 
     @NotNull
     @Positive
-    private int quantity;
+    private Integer quantity;
 
     @NotNull
     @PositiveOrZero
-    private double pricePerUnit;
+    private Double pricePerUnit;
 
     @NotNull
     private String productRef;

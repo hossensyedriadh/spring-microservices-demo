@@ -16,7 +16,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityWebFilterChain security(ServerHttpSecurity security) {
         security.cors().and().csrf().disable()
-                .securityMatcher(new PathPatternParserServerWebExchangeMatcher("/api/**"))
+                .securityMatcher(new PathPatternParserServerWebExchangeMatcher("/auth-api/**"))
                 .authorizeExchange().anyExchange()
                 .authenticated();
 

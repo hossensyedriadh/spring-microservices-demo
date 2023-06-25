@@ -16,9 +16,9 @@ public final class BearerTokenResponse implements Serializable {
     @Serial
     private static final long serialVersionUID = 6606843263549579856L;
 
-    private String access_token;
+    private String accessToken;
 
-    private String access_token_type;
+    private String accessTokenType;
 
-    private String refresh_token;
+    private String refreshToken;
 }

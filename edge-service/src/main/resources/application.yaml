@@ -9,23 +9,30 @@ spring:
       discovery:
         locator:
           enabled: true
+          lower-case-service-id: true
       routes:
         - id: product-service
-          uri: lb://PRODUCT-SERVICE
+          uri: lb://product-service
           predicates:
-            - Path=/product-service/api/**
+            - Path=/products-api/**
+          filters:
+            - BearerAuthenticationFilter
         - id: order-service
-          uri: lb://ORDER-SERVICE
+          uri: lb://order-service
           predicates:
-            - Path=/order-service/api/**
+            - Path=/orders-api/**
+          filters:
+            - BearerAuthenticationFilter
         - id: user-service
-          uri: lb://USER-SERVICE
+          uri: lb://user-service
           predicates:
-            - Path=/user-service/api/**
+            - Path=/users-api/**
+          filters:
+            - BearerAuthenticationFilter
         - id: auth-service
-          uri: lb://AUTH-SERVICE
+          uri: lb://auth-service
           predicates:
-            - Path=/auth-service/api/**
+            - Path=/auth-api/**
 eureka:
   client:
     service-url:
@@ -41,13 +48,15 @@ management:
   endpoint:
     health:
       show-details: always
+    gateway:
+      enabled: true
   info:
     env:
       enabled: true
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: info,health,gateway
       cors:
         max-age: 3600s
         allowed-origins: "*"
@@ -58,7 +67,7 @@ info:
   application:
     metadata:
       name: ${spring.application.name}
-      description: Edge Service for E-Commerce microservices landscape
+      description: Edge Service for spring-microservices-demo
       version: 1.0.0-SNAPSHOT
     developer:
       name: Syed Riadh Hossen

@@ -23,7 +23,7 @@ public final class GenericErrorResponse implements Serializable {
     private int status;
 
     @JsonSerialize(using = ZonedDateTimeSerializer.class)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd - HH:mm:ss z")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ssa z")
     private ZonedDateTime timestamp;
 
     private String message;

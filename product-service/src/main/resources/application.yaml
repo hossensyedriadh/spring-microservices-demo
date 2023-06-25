@@ -5,7 +5,7 @@ spring:
     default: dev
     active: dev
   webflux:
-    base-path: /api
+    base-path: /products-api
   data:
     rest:
       default-page-size: 14
@@ -40,7 +40,7 @@ info:
     metadata:
       name:
         ${spring.application.name}
-      description: Product Service for E-Commerce microservices landscape
+      description: Product Service for spring-microservices-demo
       version: 1.0.0-SNAPSHOT
     developer:
       name: Syed Riadh Hossen

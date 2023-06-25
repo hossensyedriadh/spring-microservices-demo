@@ -43,11 +43,11 @@ public class BearerAuthenticationService {
 
     private int accessTokenValidity;
 
-    private static final String accessTokenSubject = "Access Token";
+    private static final String accessTokenType = "Access Token";
 
     private int refreshTokenValidity;
 
-    private final String refreshTokenSubject = "Refresh Token";
+    private static final String refreshTokenType = "Refresh Token";
 
     @Value("${bearer-authentication.tokens.access-token.validity-mins}")
     public void setAccessTokenValidity(int accessTokenValidity) {
@@ -59,17 +59,19 @@ public class BearerAuthenticationService {
         this.refreshTokenValidity = refreshTokenValidity;
     }
 
-    public Mono<String> generateAccessToken(Map<String, String> claims) {
+    public Mono<String> generateAccessToken(String principal, Map<String, String> claims) {
         Calendar calendar = Calendar.getInstance(Locale.ENGLISH);
         calendar.setTimeInMillis(Instant.now().toEpochMilli());
         calendar.add(Calendar.MINUTE, this.accessTokenValidity);
 
-        JWTCreator.Builder accessTokenBuilder = JWT.create().withSubject(accessTokenSubject)
+        JWTCreator.Builder accessTokenBuilder = JWT.create().withSubject(principal)
                 .withIssuer(this.tokenIssuer);
+        claims.put("type", accessTokenType);
         claims.forEach(accessTokenBuilder::withClaim);
 
         return Mono.just(accessTokenBuilder.withNotBefore(new Date()).withIssuedAt(new Date())
-                .withExpiresAt(calendar.getTime()).sign(Algorithm.RSA256(this.rsaPublicKey, this.rsaPrivateKey)));
+                .withExpiresAt(calendar.getTime()).withAudience("edge-service", "product-service", "order-service", "user-service")
+                .sign(Algorithm.RSA256(this.rsaPublicKey, this.rsaPrivateKey)));
     }
 
     public Mono<String> getRefreshToken(String username, Map<String, String> claims) {
@@ -80,7 +82,8 @@ public class BearerAuthenticationService {
                 return refreshTokenMono.flatMap(refreshToken -> NimbusReactiveJwtDecoder.withPublicKey(this.rsaPublicKey).build().decode(refreshToken.getToken())
                         .flatMap(token -> {
                             if (Objects.requireNonNull(token.getExpiresAt()).isAfter(Instant.now())
-                                    && token.getSubject().equals(this.refreshTokenSubject)) {
+                                    && token.getClaimAsString("type").equals(refreshTokenType) &&
+                                    new HashSet<>(token.getAudience()).containsAll(List.of("edge-service", "auth-service"))) {
                                 return Mono.just(refreshToken.getToken());
                             } else {
                                 return this.createRefreshToken(username, claims);
@@ -97,14 +100,16 @@ public class BearerAuthenticationService {
         calendar.setTimeInMillis(Instant.now().toEpochMilli());
         calendar.add(Calendar.MINUTE, this.refreshTokenValidity);
 
-        JWTCreator.Builder refreshTokenBuilder = JWT.create().withSubject(this.refreshTokenSubject)
+        JWTCreator.Builder refreshTokenBuilder = JWT.create().withSubject(username)
                 .withIssuer(this.tokenIssuer);
+        claims.put("type", refreshTokenType);
         claims.forEach(refreshTokenBuilder::withClaim);
 
         String id = UUID.randomUUID().toString();
 
         String token = refreshTokenBuilder.withNotBefore(new Date()).withIssuedAt(new Date())
-                .withExpiresAt(calendar.getTime()).withJWTId(id).sign(Algorithm.RSA256(this.rsaPublicKey, this.rsaPrivateKey));
+                .withExpiresAt(calendar.getTime()).withJWTId(id).withAudience("edge-service", "auth-service")
+                .sign(Algorithm.RSA256(this.rsaPublicKey, this.rsaPrivateKey));
 
         Flux<RefreshToken> refreshTokenFlux = this.refreshTokenRepository.findAllByForUser(username);
 
@@ -126,8 +131,14 @@ public class BearerAuthenticationService {
         Mono<Jwt> decodedJwt = NimbusReactiveJwtDecoder.withPublicKey(this.rsaPublicKey).build()
                 .decode(refreshToken).onErrorResume(e -> Mono.error(new Exception(e.getMessage())));
 
-        Mono<RefreshToken> refreshTokenMono = decodedJwt.flatMap(s -> this.refreshTokenRepository
-                .findByForUser(s.getClaimAsString("username")));
+        Mono<RefreshToken> refreshTokenMono = decodedJwt.flatMap(token -> {
+            if (new HashSet<>(token.getAudience()).containsAll(List.of("edge-service", "auth-service")) && token.getClaimAsString("type").equals(refreshTokenType)
+                    && Objects.requireNonNull(token.getExpiresAt()).isAfter(Instant.now()) && token.getNotBefore().isBefore(Instant.now())) {
+                return this.refreshTokenRepository.findById(token.getId());
+            } else {
+                return Mono.empty();
+            }
+        });
 
         return refreshTokenMono.hasElement().flatMap(Mono::just)
                 .switchIfEmpty(Mono.just(false));

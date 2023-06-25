@@ -5,14 +5,14 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.1</version>
+        <version>3.1.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>io.github.hossensyedriadh</groupId>
     <artifactId>product-service</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <name>product-service</name>
-    <description>Product Service for E-Commerce microservices landscape</description>
+    <description>Product Service for spring-microservices-demo</description>
 
     <developers>
         <developer>
@@ -24,7 +24,7 @@
 
     <properties>
         <java.version>17</java.version>
-        <spring-cloud.version>2022.0.0</spring-cloud.version>
+        <spring-cloud.version>2022.0.3</spring-cloud.version>
     </properties>
 
     <dependencies>
@@ -85,6 +85,10 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

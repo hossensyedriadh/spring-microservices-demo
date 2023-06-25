@@ -11,7 +11,6 @@ import org.springframework.kafka.core.reactive.ReactiveKafkaConsumerTemplate;
 import reactor.kafka.receiver.ReceiverOptions;
 
 import java.util.Collections;
-import java.util.List;
 
 @EnableKafka
 @Configuration
@@ -30,7 +29,7 @@ public class KafkaConfiguration {
 
     @Bean("createOrderTemplate")
     public ReactiveKafkaConsumerTemplate<String, Order> reactiveKafkaConsumerTemplateCreateOrderTopic(@Qualifier("createOrderOptions")
-                                                                                                          ReceiverOptions<String, Order> receiverOptions) {
+                                                                                                      ReceiverOptions<String, Order> receiverOptions) {
         return new ReactiveKafkaConsumerTemplate<>(receiverOptions);
     }
 

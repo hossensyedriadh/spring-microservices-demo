@@ -46,10 +46,9 @@ public final class AuthenticationServiceImpl implements AuthenticationService {
                 String username = userDetails.getUsername();
                 return this.userRepository.findById(userDetails.getUsername()).flatMap(user -> {
                     Map<String, String> claims = new HashMap<>();
-                    claims.put("username", username);
                     claims.put("authority", String.valueOf(userDetails.getAuthorities().toArray()[0]));
 
-                    Mono<String> accessTokenMono = this.bearerAuthenticationService.generateAccessToken(claims);
+                    Mono<String> accessTokenMono = this.bearerAuthenticationService.generateAccessToken(username, claims);
                     Mono<String> refreshTokenMono = this.bearerAuthenticationService.getRefreshToken(user.getUsername(), claims);
 
                     return accessTokenMono.flatMap(accessToken -> refreshTokenMono.flatMap(refreshToken ->
@@ -63,30 +62,29 @@ public final class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public Mono<BearerTokenResponse> renewAccessToken(AccessTokenRequest accessTokenRequest) {
-        String refreshToken = accessTokenRequest.getRefresh_token();
+        String refreshToken = accessTokenRequest.getRefreshToken();
 
         return this.bearerAuthenticationService.reactiveJwtDecoder().decode(refreshToken)
                 .onErrorResume(e -> Mono.error(new GenericException("Invalid refresh token", HttpStatus.UNAUTHORIZED)))
-                .flatMap(jwt -> this.bearerAuthenticationService.isRefreshTokenValid(refreshToken).flatMap(refreshTokenValid -> {
+                .flatMap(jwt -> this.bearerAuthenticationService.isRefreshTokenValid(jwt.getTokenValue()).flatMap(refreshTokenValid -> {
                     if (refreshTokenValid) {
-                        return generateAccessToken(refreshToken, jwt);
+                        return generateAccessToken(jwt);
                     } else {
                         return Mono.error(new GenericException("Invalid refresh token", HttpStatus.UNAUTHORIZED));
                     }
                 }).onErrorResume(e -> Mono.error(new GenericException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR))));
     }
 
-    private Mono<? extends BearerTokenResponse> generateAccessToken(String refreshToken, Jwt jwt) {
+    private Mono<? extends BearerTokenResponse> generateAccessToken(Jwt jwt) {
         Map<String, Object> claims = jwt.getClaims();
         Map<String, String> convertedClaims = new HashMap<>();
 
-        convertedClaims.put("username", claims.get("username").toString());
         convertedClaims.put("authority", claims.get("authority").toString());
 
         Mono<String> accessTokenMono = this.bearerAuthenticationService
-                .generateAccessToken(convertedClaims);
+                .generateAccessToken(jwt.getSubject(), convertedClaims);
 
-        return accessTokenMono.flatMap(renewedAccessToken -> Mono.just(new BearerTokenResponse(renewedAccessToken, this.accessTokenType, refreshToken)))
+        return accessTokenMono.flatMap(renewedAccessToken -> Mono.just(new BearerTokenResponse(renewedAccessToken, this.accessTokenType, jwt.getTokenValue())))
                 .onErrorResume(e -> Mono.error(new GenericException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR)));
     }
 }

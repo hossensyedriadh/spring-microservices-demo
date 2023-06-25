@@ -5,7 +5,7 @@ spring:
     default: dev
     active: dev
   webflux:
-    base-path: /api
+    base-path: /orders-api
   data:
     rest:
       default-page-size: 14
@@ -36,7 +36,7 @@ info:
     metadata:
       name:
         ${spring.application.name}
-      description: Order Service for E-Commerce microservices landscape
+      description: Order Service for spring-microservices-demo
       version: 1.0.0-SNAPSHOT
     developer:
       name: Syed Riadh Hossen

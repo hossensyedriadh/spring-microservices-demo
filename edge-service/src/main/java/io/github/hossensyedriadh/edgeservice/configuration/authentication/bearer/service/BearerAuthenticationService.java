@@ -12,6 +12,10 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.security.interfaces.RSAPublicKey;
+import java.time.Instant;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 
 @Log4j
 @Service
@@ -23,15 +27,16 @@ public class BearerAuthenticationService {
         this.rsaPublicKey = rsaPublicKey;
     }
 
-    private final String accessTokenSubject = "Access Token";
+    private static final String accessTokenType = "Access Token";
 
     public Mono<Boolean> isAccessTokenValid(String token) {
         Mono<Jwt> decodedJwt = NimbusReactiveJwtDecoder.withPublicKey(this.rsaPublicKey).build()
                 .decode(token).onErrorResume(e -> Mono.error(new GenericException(HttpStatus.UNAUTHORIZED,
                         e.getMessage())));
 
-        return decodedJwt.flatMap(jwt -> Mono.just(jwt.hasClaim("username") && jwt.hasClaim("authority")
-                && jwt.getSubject().equals(this.accessTokenSubject)));
+        return decodedJwt.flatMap(jwt -> Mono.just(jwt.getClaim("type").equals(accessTokenType) && jwt.hasClaim("authority")
+                && Objects.requireNonNull(jwt.getExpiresAt()).isAfter(Instant.now()) && jwt.getNotBefore().isBefore(Instant.now()) &&
+                new HashSet<>(jwt.getAudience()).containsAll(List.of("edge-service", "product-service", "order-service", "user-service"))));
     }
 
     @Bean

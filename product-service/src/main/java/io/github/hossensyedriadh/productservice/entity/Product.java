@@ -23,7 +23,7 @@ public final class Product implements Serializable {
     @Setter(AccessLevel.NONE)
     @MongoId(FieldType.STRING)
     private String id;
-    
+
     @NotNull
     @Pattern(message = "Only upper-case, lower-case letters, numbers, hyphens, whitespaces, parentheses and periods are allowed", regexp = "^[a-zA-Z0-9\\s.\\-()]+$")
     @Length(min = 5, max = 150, message = "Length must be within 5-150 characters")
@@ -38,9 +38,9 @@ public final class Product implements Serializable {
 
     @NotNull
     @PositiveOrZero
-    private int stock;
+    private Integer stock;
 
     @NotNull
     @PositiveOrZero
-    private double price;
+    private Double price;
 }

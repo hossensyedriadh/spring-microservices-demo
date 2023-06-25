@@ -9,6 +9,10 @@ eureka:
   client:
     register-with-eureka: false
     fetch-registry: false
+    service-url:
+      defaultZone: http://localhost:8761/eureka
   server:
     expected-client-renewal-interval-seconds: 10
     renewal-percent-threshold: 0.25
+  datacenter: Blue
+  environment: Development

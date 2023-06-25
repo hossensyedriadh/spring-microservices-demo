@@ -5,12 +5,12 @@ spring:
     default: dev
     active: dev
   webflux:
-    base-path: /api
+    base-path: /auth-api
 info:
   application:
     metadata:
       name: ${spring.application.name}
-      description: Authentication Service for E-Commerce microservices landscape
+      description: Authentication Service for spring-microservices-demo
       version: 1.0.0-SNAPSHOT
     developer:
       name: Syed Riadh Hossen
@@ -39,7 +39,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: info,health
       cors:
         max-age: 3600s
         allowed-origins: "*"

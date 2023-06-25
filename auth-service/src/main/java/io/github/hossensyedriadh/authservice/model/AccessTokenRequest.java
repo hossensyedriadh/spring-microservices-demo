@@ -16,5 +16,5 @@ public final class AccessTokenRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = 6352438051443760783L;
 
-    private String refresh_token;
+    private String refreshToken;
 }

@@ -18,3 +18,8 @@ server:
     include-binding-errors: always
     include-stacktrace: never
   shutdown: immediate
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info,health

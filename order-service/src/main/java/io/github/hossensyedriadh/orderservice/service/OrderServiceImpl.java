@@ -68,7 +68,7 @@ public final class OrderServiceImpl implements OrderService {
         Flux<Item> items = Flux.fromIterable(order.getItems());
         List<Item> itemList = new ArrayList<>();
 
-        Mono<Boolean> valid = items.flatMap(item -> this.webClient.build().get().uri("http://product-service/api/v1/products/{id}", item.getProductRef())
+        Mono<Boolean> valid = items.flatMap(item -> this.webClient.build().get().uri("http://product-service/products-api/v1/products/{id}", item.getProductRef())
                 .retrieve().bodyToMono(Product.class)
                 .onErrorResume(WebClientResponseException.BadRequest.class, e -> Mono.error(new ResourceException(e.getMessage(), HttpStatus.BAD_REQUEST)))
                 .onErrorResume(WebClientResponseException.ServiceUnavailable.class, e -> Mono.error(new ResourceException("No instance of 'product-service' is available",
