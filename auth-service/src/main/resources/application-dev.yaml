@@ -31,3 +31,17 @@ server:
     include-binding-errors: always
     include-stacktrace: never
   shutdown: graceful
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: info,health
+      cors:
+        max-age: 3600s
+        allowed-origins: "*"
+        allowed-headers: Accept, Content-Type
+        allowed-methods: POST, OPTIONS, HEAD
+        allow-credentials: false

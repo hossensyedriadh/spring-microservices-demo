@@ -25,3 +25,14 @@ server:
     include-exception: false
     include-binding-errors: always
     include-stacktrace: never
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info,health
+  info:
+    env:
+      enabled: true
+  endpoint:
+    health:
+      show-details: always

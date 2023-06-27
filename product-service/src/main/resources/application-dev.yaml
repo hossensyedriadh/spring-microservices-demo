@@ -23,3 +23,9 @@ management:
     web:
       exposure:
         include: info,health
+  info:
+    env:
+      enabled: true
+  endpoint:
+    health:
+      show-details: always

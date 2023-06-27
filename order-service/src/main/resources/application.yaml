@@ -20,17 +20,6 @@ eureka:
     registry-fetch-interval-seconds: 5
     fetch-registry: true
     register-with-eureka: true
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  info:
-    env:
-      enabled: true
-  endpoint:
-    health:
-      show-details: always
 info:
   application:
     metadata:

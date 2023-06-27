@@ -32,17 +32,3 @@ bearer-authentication:
       validity-mins: 60
     refresh-token:
       validity-mins: 360
-management:
-  endpoint:
-    health:
-      show-details: when_authorized
-  endpoints:
-    web:
-      exposure:
-        include: info,health
-      cors:
-        max-age: 3600s
-        allowed-origins: "*"
-        allowed-headers: Accept, Content-Type
-        allowed-methods: POST, OPTIONS, HEAD
-        allow-credentials: false
