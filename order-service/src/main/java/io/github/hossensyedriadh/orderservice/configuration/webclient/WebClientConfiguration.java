@@ -11,7 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 @LoadBalancerClients(value = {
         @LoadBalancerClient(name = "product-service", configuration = LoadBalancerClientConfiguration.class),
-        @LoadBalancerClient(name = "edge-service", configuration = LoadBalancerClientConfiguration.class)
+        @LoadBalancerClient(name = "user-service", configuration = LoadBalancerClientConfiguration.class)
 })
 public class WebClientConfiguration {
     @Bean
