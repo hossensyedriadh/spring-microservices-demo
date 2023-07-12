@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: open-service
+  profiles:
+    default: dev
+    active: dev
+  webflux:
+    base-path: /open-api
+info:
+  application:
+    metadata:
+      name: ${spring.application.name}
+      description: Open Service for spring-microservices-demo
+      version: 1.0.0-SNAPSHOT
+    developer:
+      name: Syed Riadh Hossen
+      email: hossensyedriadh@gmail.com
+      url: https://hossensyedriadh.github.io
+eureka:
+  client:
+    service-url:
+      default-zone: http://localhost:8761/eureka
