@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Crypt</title>
+    <style media="all" type="text/css">
+        html, body {
+            font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, "sans-serif";
+        }
+
+        body {
+            width: 40vw;
+            background-color: #F4F4F4;
+            margin: auto;
+        }
+
+        .main_div {
+            padding: 10px;
+        }
+
+        .top_div {
+            background-color: #ffffff;
+            padding: 15px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="main_div">
+    <div class="top_div">
+        <div>
+            <h3 th:text="'Hello, ' + ${name} + '!'"></h3>
+            <h2>Welcome to Reactive Microservices</h2>
+            You have successfully registered.
+            <br>
+        </div>
+    </div>
+</div>
+</body>
+</html>

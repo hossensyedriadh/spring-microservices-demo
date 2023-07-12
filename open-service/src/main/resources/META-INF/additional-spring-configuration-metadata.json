@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "kafka.producer.topic.mail",
+      "type": "java.lang.String",
+      "description": "Kafka topic name for mailing."
+  }
+] }

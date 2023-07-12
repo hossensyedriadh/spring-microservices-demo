@@ -1,5 +1,6 @@
 package io.github.hossensyedriadh.openservice.service.passwordreset;
 
+import io.github.hossensyedriadh.openservice.configuration.mail.MailModel;
 import io.github.hossensyedriadh.openservice.entity.Otp;
 import io.github.hossensyedriadh.openservice.entity.UserAccount;
 import io.github.hossensyedriadh.openservice.enumerator.OtpType;
@@ -9,28 +10,46 @@ import io.github.hossensyedriadh.openservice.repository.r2dbc.OtpRepository;
 import io.github.hossensyedriadh.openservice.repository.r2dbc.UserAccountRepository;
 import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.reactive.ReactiveKafkaProducerTemplate;
+import org.springframework.messaging.MessagingException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 @Service
 public final class PasswordResetServiceImpl implements PasswordResetService {
     private final UserAccountRepository userAccountRepository;
     private final OtpRepository otpRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ReactiveKafkaProducerTemplate<String, MailModel> reactiveKafkaProducerTemplate;
+    private final SpringTemplateEngine springTemplateEngine;
+
+    @Value("${kafka.producer.topic.mail}")
+    private String mailTopic;
 
     @Autowired
     public PasswordResetServiceImpl(UserAccountRepository userAccountRepository, OtpRepository otpRepository,
-                                    PasswordEncoder passwordEncoder) {
+                                    PasswordEncoder passwordEncoder, ReactiveKafkaProducerTemplate<String, MailModel> reactiveKafkaProducerTemplate,
+                                    SpringTemplateEngine springTemplateEngine) {
         this.userAccountRepository = userAccountRepository;
         this.otpRepository = otpRepository;
         this.passwordEncoder = passwordEncoder;
+        this.reactiveKafkaProducerTemplate = reactiveKafkaProducerTemplate;
+        this.springTemplateEngine = springTemplateEngine;
     }
 
     @Override
@@ -46,7 +65,9 @@ public final class PasswordResetServiceImpl implements PasswordResetService {
                     otp.setType(OtpType.PASSWORD_RESET);
                     otp.setForUser(username);
 
-                    return this.otpRepository.save(otp).doOnSuccess(o -> this.sendForgotPasswordEmail(userAccount, plainOtp));
+                    return this.otpRepository.save(otp).publishOn(Schedulers.boundedElastic())
+                            .doOnSuccess(o -> this.sendForgotPasswordEmail(userAccount, plainOtp)
+                                    .publishOn(Schedulers.boundedElastic()).subscribe());
                 }).then();
     }
 
@@ -74,20 +95,53 @@ public final class PasswordResetServiceImpl implements PasswordResetService {
             return otpFlux.switchIfEmpty(Mono.error(new ResourceException("Invalid OTP", HttpStatus.BAD_REQUEST))).flatMap(otp -> {
                 if (this.passwordEncoder.matches(passwordResetRequest.getOtp(), otp.getOtp())) {
                     userAccount.setPassword(this.passwordEncoder.encode(passwordResetRequest.getNewPassword()));
-                    return this.userAccountRepository.save(userAccount).doOnSuccess(this::sendConfirmationEmail)
-                            .publishOn(Schedulers.boundedElastic())
-                            .doOnSuccess(s -> this.otpRepository.deleteById(otp.getId()).subscribe());
+                    userAccount.setIsNew(false);
+                    return this.userAccountRepository.save(userAccount).publishOn(Schedulers.boundedElastic())
+                            .doOnSuccess(s -> this.otpRepository.deleteById(otp.getId()).publishOn(Schedulers.boundedElastic()).subscribe())
+                            .doOnSuccess(account -> this.sendConfirmationEmail(account).publishOn(Schedulers.boundedElastic()).subscribe());
                 }
                 return Mono.error(new ResourceException("Invalid OTP", HttpStatus.BAD_REQUEST));
             }).then();
         }).then();
     }
 
-    private void sendForgotPasswordEmail(UserAccount account, String otp) {
-        //todo: to be implemented using kafka
+    private Mono<Void> sendForgotPasswordEmail(UserAccount account, String otp) {
+        Context context = new Context(Locale.ENGLISH);
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("name", account.getFirstName().concat(" ").concat(account.getLastName()));
+        variables.put("otp", otp);
+        variables.put("timestamp", ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss a Z")));
+        variables.put("expiry", ZonedDateTime.now().plusMinutes(5).format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss a Z")));
+
+        context.setVariables(variables);
+
+        try {
+            final String htmlContent = this.springTemplateEngine.process("mail/password-reset-verification.html", context);
+
+            MailModel mailModel = new MailModel(account.getEmail(), htmlContent);
+
+            return this.reactiveKafkaProducerTemplate.send(this.mailTopic, mailModel).then();
+        } catch (MessagingException e) {
+            throw new ResourceException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    private void sendConfirmationEmail(UserAccount account) {
-        //todo: to be implemented using kafka
+    private Mono<Void> sendConfirmationEmail(UserAccount account) {
+        Context context = new Context(Locale.ENGLISH);
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("name", account.getFirstName().concat(" ").concat(account.getLastName()));
+        variables.put("timestamp", ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss a Z")));
+
+        context.setVariables(variables);
+
+        try {
+            final String htmlContent = this.springTemplateEngine.process("mail/password-reset-confirmation.html", context);
+
+            MailModel mailModel = new MailModel(account.getEmail(), htmlContent);
+
+            return this.reactiveKafkaProducerTemplate.send(this.mailTopic, mailModel).then();
+        } catch (MessagingException e) {
+            throw new ResourceException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

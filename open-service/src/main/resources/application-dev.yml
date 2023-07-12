@@ -15,6 +15,11 @@ spring:
     r2dbc:
       repositories:
         enabled: true
+  kafka:
+    producer:
+      bootstrap-servers: 127.0.0.1:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 server:
   forward-headers-strategy: framework
   netty:
