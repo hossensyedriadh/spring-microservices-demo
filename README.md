@@ -57,3 +57,7 @@ Implementation of Reactive Microservices using Spring Boot
 <div>
   For synchronous communication, the services use WebClient, and for asynchronous communication, the services use Apache Kafka.
 </div>
+<hr>
+<div>
+	<img src="https://github.com/hossensyedriadh/spring-microservices-demo/blob/main/Diagram.png" alt="diagram" width="1080px">
+</div>
