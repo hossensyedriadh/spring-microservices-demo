@@ -1,0 +1,59 @@
+spring:
+  application:
+    name: mail-service
+  profiles:
+    default: dev
+    active: dev
+  cloud:
+    discovery:
+      enabled: true
+  kafka:
+    consumer:
+      group-id: mailing
+      auto-offset-reset: latest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            use:
+              type:
+                headers: false
+            value:
+              default:
+                type: io.github.hossensyedriadh.mailservice.model.MailModel
+    properties:
+      spring:
+        json:
+          trusted:
+            packages: "*"
+  mail:
+    host: ${smtp_host}
+    port: ${smtp_port}
+    username: ${smtp_username}
+    password: ${smtp_password}
+    default-encoding: UTF-8
+    test-connection: true
+    protocol: smtp
+eureka:
+  client:
+    service-url:
+      default-zone: http://localhost:8761/eureka
+    registry-fetch-interval-seconds: 5
+    fetch-registry: true
+    register-with-eureka: true
+info:
+  application:
+    metadata:
+      name:
+        ${spring.application.name}
+      description: Mailing Service for spring-microservices-demo
+      version: 1.0.0-SNAPSHOT
+    developer:
+      name: Syed Riadh Hossen
+      email: hossensyedriadh@gmail.com
+      url: https://hossensyedriadh.github.io
+kafka:
+  consumer:
+    topic:
+      mail: MAIL

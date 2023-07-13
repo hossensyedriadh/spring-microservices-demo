@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "kafka.consumer.topic.mail",
+      "type": "java.lang.String",
+      "description": "Apache Kafka topic for mailing."
+    }
+  ]
+}
