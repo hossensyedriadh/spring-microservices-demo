@@ -2,7 +2,7 @@
 Implementation of Reactive Microservices using Spring Boot
 <hr>
 <div>
-    This project has 7 microservices:
+    This project has 8 microservices:
   <ul>
     <li>
       <strong>Auth Service</strong>
@@ -13,6 +13,11 @@ Implementation of Reactive Microservices using Spring Boot
       <strong>Discovery Service</strong>
       <section>Responsible for naming and providing information about other microservice instances</section>
     </li>
+	<br>
+	<li>
+      <strong>Mail Service</strong>
+      <section>Responsible for consuming emails from Apache Kafka and disbursement using SMTP</section>
+	</li>
     <br>
     <li>
       <strong>Edge Service</strong>
