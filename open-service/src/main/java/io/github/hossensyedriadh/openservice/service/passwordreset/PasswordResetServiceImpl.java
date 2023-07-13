@@ -41,6 +41,9 @@ public final class PasswordResetServiceImpl implements PasswordResetService {
     @Value("${kafka.producer.topic.mail}")
     private String mailTopic;
 
+    @Value("${mail.sender}")
+    private String mailSender;
+
     @Autowired
     public PasswordResetServiceImpl(UserAccountRepository userAccountRepository, OtpRepository otpRepository,
                                     PasswordEncoder passwordEncoder, ReactiveKafkaProducerTemplate<String, MailModel> reactiveKafkaProducerTemplate,
@@ -118,7 +121,7 @@ public final class PasswordResetServiceImpl implements PasswordResetService {
         try {
             final String htmlContent = this.springTemplateEngine.process("mail/password-reset-verification.html", context);
 
-            MailModel mailModel = new MailModel(account.getEmail(), htmlContent);
+            MailModel mailModel = new MailModel(this.mailSender, account.getEmail(), "Password Reset Request", htmlContent);
 
             return this.reactiveKafkaProducerTemplate.send(this.mailTopic, mailModel).then();
         } catch (MessagingException e) {
@@ -137,7 +140,7 @@ public final class PasswordResetServiceImpl implements PasswordResetService {
         try {
             final String htmlContent = this.springTemplateEngine.process("mail/password-reset-confirmation.html", context);
 
-            MailModel mailModel = new MailModel(account.getEmail(), htmlContent);
+            MailModel mailModel = new MailModel(this.mailSender, account.getEmail(), "Password successfully reset", htmlContent);
 
             return this.reactiveKafkaProducerTemplate.send(this.mailTopic, mailModel).then();
         } catch (MessagingException e) {

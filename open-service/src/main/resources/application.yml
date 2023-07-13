@@ -24,3 +24,5 @@ kafka:
   producer:
     topic:
       mail: MAIL
+mail:
+  sender: ${mail_sender}

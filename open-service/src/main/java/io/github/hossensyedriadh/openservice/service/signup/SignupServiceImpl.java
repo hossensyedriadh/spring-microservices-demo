@@ -29,6 +29,9 @@ public final class SignupServiceImpl implements SignupService {
     @Value("${kafka.producer.topic.mail}")
     private String mailTopic;
 
+    @Value("${mail.sender}")
+    private String mailSender;
+
     @Autowired
     public SignupServiceImpl(UserAccountRepository userAccountRepository, PasswordEncoder passwordEncoder,
                              ReactiveKafkaProducerTemplate<String, MailModel> reactiveKafkaProducerTemplate,
@@ -67,7 +70,7 @@ public final class SignupServiceImpl implements SignupService {
         try {
             final String htmlContent = this.springTemplateEngine.process("mail/signup-success.html", context);
 
-            MailModel mailModel = new MailModel(account.getEmail(), htmlContent);
+            MailModel mailModel = new MailModel(this.mailSender, account.getEmail(), "Welcome to Reactive World", htmlContent);
 
             return this.reactiveKafkaProducerTemplate.send(this.mailTopic, mailModel).then();
         } catch (MessagingException e) {
