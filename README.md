@@ -6,7 +6,7 @@ Implementation of Reactive Microservices using Spring Boot
   <ul>
     <li>
       <strong>Auth Service</strong>
-      <section>Responsible for authentication using JWTs</section>
+      <section>Responsible for providing authentication using JWTs</section>
     </li>
     <br>
     <li>
